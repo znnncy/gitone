@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:c="http://www.springframework.org/schema/c"
+	   xmlns:cache="http://www.springframework.org/schema/cache"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	   xmlns:jee="http://www.springframework.org/schema/jee"
+	   xmlns:lang="http://www.springframework.org/schema/lang"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+		default-autowire="byName">
+		
+	
+	<context:component-scan base-package="com.jk" />
+	<aop:aspectj-autoproxy/>
+	<!-- 配置数据源 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    	<property name="driverClass"><value>com.mysql.jdbc.Driver</value></property>
+        <property name="jdbcUrl"><value>jdbc:mysql://localhost:3306/1711a</value></property>
+        <property name="user"><value>root</value></property>
+        <property name="password"><value>root</value></property>
+    </bean>
+
+
+<!-- 	注解处理事务 -->
+<!-- 	<tx:annotation-driven transaction-manager="transactionManager" /> -->
+	<!-- 配置Hibernate的SessionFactory -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<!-- 注入连接池 -->
+		<property name="dataSource" ref="dataSource"/>
+		<!-- 配置Hibernate属性 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.show_sql">true</prop><!-- 是否展示SQL -->
+				<prop key="hibernate.format_sql">true</prop><!-- 格式化SQL -->
+				<prop key="hibernate.hbm2ddl.auto">update</prop><!-- 是否自动创建表结构 -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop><!--数据库方言-->
+			</props>
+		</property>
+		<!-- 扫描并加载注解过的实体类 -->
+		<property name="annotatedClasses">
+			<list>
+				<value>com.jk.demo.pojo.User</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 配置事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<!-- 注入SessionFactory -->
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	 <!-- 配置事物 -->
+	 <!-- 
+		事物传播特性（常用）
+		1. PROPAGATION：REQUIRED: 如果存在一个事务，则支持当前事务。如果没有事务则开启
+        2. PROPAGATION：SUPPORTS: 如果存在一个事务，支持当前事务。如果没有事务，则非事务的执行
+		-->
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager" >
+		<tx:attributes>
+<!-- 			添加 -->
+			<tx:method name="add*" propagation="REQUIRED" />
+<!-- 			修改 -->
+			<tx:method name="update*" propagation="REQUIRED" />
+<!-- 			添加或修改 -->
+			<tx:method name="edit*" propagation="REQUIRED" />
+<!-- 			删除 -->
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="remove*" propagation="REQUIRED" />
+			<tx:method name="*" propagation="SUPPORTS" read-only="true" />
+		</tx:attributes>
+ 	</tx:advice>
+	<aop:config>
+<!-- 		第一个*代表所有的返回值类型；第二个*代表所有的类；第三个*代表类所有方法；..代表子或者孙子包；最后一个..代表所有的参数 -->
+		<aop:pointcut id="transactionPointcut" expression="(execution(* com.jk.*.service..*.*(..)))" />
+		<aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice" />
+	</aop:config>
+</beans>

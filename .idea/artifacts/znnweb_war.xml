@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="znnweb:war">
+    <output-path>$PROJECT_DIR$/znnweb/target</output-path>
+    <root id="archive" name="znnweb.war">
+      <element id="artifact" artifact-name="znnweb:war exploded" />
+    </root>
+  </artifact>
+</component>

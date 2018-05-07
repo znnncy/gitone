@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/my_parent.iml" filepath="$PROJECT_DIR$/my_parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/znndao/znndao.iml" filepath="$PROJECT_DIR$/znndao/znndao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/znnservice/znnservice.iml" filepath="$PROJECT_DIR$/znnservice/znnservice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/znnweb/znnweb.iml" filepath="$PROJECT_DIR$/znnweb/znnweb.iml" />
+    </modules>
+  </component>
+</project>
