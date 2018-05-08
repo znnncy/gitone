@@ -4,6 +4,6 @@ public class test {
 
     public static  void  main(String [] args){
 
-        Integer a=2;
+        Integer a=66;
     }
 }
